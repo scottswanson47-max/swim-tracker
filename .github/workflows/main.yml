@@ -1,0 +1,32 @@
+name: Hourly Swim Scrape
+on:
+  schedule:
+    - cron: '0 * * * *' # Runs every hour
+  workflow_dispatch: # Allows you to run it manually to test
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Chrome and Scraper tools
+        run: |
+          pip install selenium webdriver-manager
+
+      - name: Run Scraper
+        run: python scraper.py
+
+      - name: Save and Upload results
+        run: |
+          git config user.name "Automated"
+          git config user.email "actions@users.noreply.github.com"
+          git add swim_data.json
+          git commit -m "Update swim slots" || exit 0
+          git push
