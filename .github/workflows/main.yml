@@ -1,18 +1,22 @@
 name: Hourly Swim Scrape
 on:
   schedule:
-    - cron: '0 * * * *' # Runs every hour
-  workflow_dispatch: # Allows you to run it manually to test
+    - cron: '0 * * * *' 
+  workflow_dispatch: 
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    # This explicitly gives the robot permission to "write" the file
+    permissions:
+      contents: write
+      
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # Updated to v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5 # Updated to v5
         with:
           python-version: '3.9'
 
@@ -28,5 +32,6 @@ jobs:
           git config user.name "Automated"
           git config user.email "actions@users.noreply.github.com"
           git add swim_data.json
-          git commit -m "Update swim slots" || exit 0
+          # This line prevents the error if nothing has changed
+          git commit -m "Update swim slots" || echo "No changes to commit"
           git push
